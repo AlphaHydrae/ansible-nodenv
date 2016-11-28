@@ -1,0 +1,29 @@
+---
+- name: Install nodenv
+  homebrew: name={{ item }} state=present
+  become: true
+  become_user: "{{ nodenv_homebrew_user }}"
+  items:
+    - nodenv
+    - node-build
+  when: ansible_pkg_mgr == 'homebrew'
+- name: Install the default node version
+  command: "{{ nodenv_bin }} install {{ nodenv_node_version }} creates={{ nodenv_versions }}/{{ nodenv_node_version }}"
+  environment:
+    PATH: "{{ nodenv_root }}:{{ ansible_env.PATH  }}"
+  become: true
+  become_user: "{{ nodenv_homebrew_user }}"
+  when: nodenv_node_version is defined
+- name: Set the default node version
+  command: "{{ nodenv_bin }} global {{ nodenv_node_version }}"
+  environment:
+    PATH: "{{ nodenv_root }}:{{ ansible_env.PATH  }}"
+  become: true
+  become_user: "{{ nodenv_homebrew_user }}"
+  register: result
+  changed_when: result.rc != 0
+  when: nodenv_node_version is defined
+
+# Other package managers
+- fail: msg="{{ ansible_pkg_mgr }} is not a supported package manager (Homebrew is supported)"
+  when: ansible_pkg_mgr != 'homebrew'

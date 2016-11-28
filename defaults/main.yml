@@ -1,0 +1,7 @@
+---
+nodenv_user: "{{ user | default(omit) }}"
+nodenv_root: "/usr/local/bin"
+nodenv_bin: "{{ nodenv_root }}/nodenv"
+nodenv_homebrew_user: "{{ homebrew_user | default(nodenv_user) | default(omit) }}"
+nodenv_user_home: "{{ host_user_homes }}/{{ nodenv_user }}"
+nodenv_versions: "{{ nodenv_user_home }}/.nodenv/versions"
